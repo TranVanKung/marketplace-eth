@@ -1,35 +1,29 @@
-import {
-  Footer,
-  Navbar,
-  Hero,
-  Breadcrumbs,
-  Walletbar,
-  EthRates,
-} from "@/components";
+import { Fragment } from "react";
+import { Hero, Breadcrumbs, Walletbar, EthRates } from "@/components";
 import { CourseList } from "@/components/course";
 import { OrderCard } from "@/components/order";
+import { BaseLayout } from "@/components/layout";
+import { getAllCourse } from "@/content/courses/fetcher";
 
-const Home = () => {
+const Home = (props: any) => {
+  const { courses } = props;
+
   return (
-    <div>
-      <div className="relative bg-white overflow-hidden">
-        <div className="relative max-w-7xl mx-auto px-4">
-          <Navbar />
-
-          <div className="fit">
-            <Hero />
-            <Breadcrumbs />
-            <Walletbar />
-            <EthRates />
-            <CourseList />
-            <OrderCard />
-          </div>
-        </div>
-
-        <Footer />
-      </div>
-    </div>
+    <Fragment>
+      <Hero />
+      <CourseList courses={courses || []} />
+    </Fragment>
   );
+};
+
+Home.Layout = BaseLayout;
+
+export const getStaticProps = () => {
+  const { data } = getAllCourse();
+
+  return {
+    props: { courses: data },
+  };
 };
 
 export default Home;
