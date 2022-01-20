@@ -1,8 +1,7 @@
 import { Fragment } from "react";
-import { Hero, Breadcrumbs, Walletbar, EthRates } from "@/components";
-import { CourseList } from "@/components/course";
-import { OrderCard } from "@/components/order";
-import { BaseLayout } from "@/components/layout";
+import { Hero } from "@/components/ui";
+import { CourseList } from "@/components/ui/course";
+import { BaseLayout } from "@/components/ui/layout";
 import { getAllCourse } from "@/content/courses/fetcher";
 
 const Home = (props: any) => {
