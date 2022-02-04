@@ -8,12 +8,15 @@
     "lint": "next lint"
   },
   "dependencies": {
+    "@metamask/detect-provider": "^1.2.0",
     "autoprefixer": "^10.4.2",
     "next": "12.0.8",
     "postcss": "^8.4.5",
     "react": "17.0.2",
     "react-dom": "17.0.2",
-    "tailwindcss": "^3.0.15"
+    "swr": "^1.2.0",
+    "tailwindcss": "^3.0.15",
+    "web3": "^1.7.0"
   },
   "devDependencies": {
     "@types/node": "17.0.8",

@@ -5,5 +5,15 @@ import Breadcrumbs from "./common/breadcrumbs";
 import Modal from "./common/modal";
 import EthRates from "./web3/ethRates";
 import Walletbar from "./web3/walletbar";
+import Button from "./common/button";
 
-export { Footer, Navbar, Hero, Breadcrumbs, EthRates, Walletbar, Modal };
+export {
+  Footer,
+  Navbar,
+  Hero,
+  Breadcrumbs,
+  EthRates,
+  Walletbar,
+  Modal,
+  Button,
+};
