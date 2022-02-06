@@ -7,12 +7,15 @@ import { useAccount, useNetwork } from "@/components/hooks/web3";
 import { CourseCard } from "@/components/ui/course";
 import { Button } from "@/components/ui";
 import { OrderModal } from "@/components/ui/order";
+import { useEthPrice } from "@/components/hooks/useEthPrice";
+import { EthRates } from "@/components/ui";
 
 const Marketplace = (props: any) => {
   const { courses } = props;
   const [selectedCourse, setSelectedCourse] = useState(null);
   const { account } = useAccount();
   const { network } = useNetwork();
+  const { eth, perItem } = useEthPrice();
 
   return (
     <Fragment>
@@ -26,6 +29,8 @@ const Marketplace = (props: any) => {
             hasInitialResponse: network?.hasInitialResponse,
           }}
         />
+
+        <EthRates eth={eth?.data} perItem={perItem} />
       </div>
 
       <CourseList courses={courses || []}>
