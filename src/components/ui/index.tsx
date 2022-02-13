@@ -6,6 +6,9 @@ import Modal from "./common/modal";
 import EthRates from "./web3/ethRates";
 import Walletbar from "./web3/walletbar";
 import Button from "./common/button";
+import ActiveLink from "./common/link";
+import Message from "./common/message";
+import Loader from "./common/loader";
 
 export {
   Footer,
@@ -16,4 +19,7 @@ export {
   Walletbar,
   Modal,
   Button,
+  ActiveLink,
+  Message,
+  Loader,
 };

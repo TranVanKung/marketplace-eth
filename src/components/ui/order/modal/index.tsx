@@ -1,25 +1,69 @@
 import { useState, useEffect } from "react";
 import { Modal, Button } from "@/components/ui";
+import { useEthPrice } from "@/components/hooks/useEthPrice";
+
+const defaultOrder = {
+  price: "",
+  email: "",
+  confirmationEmail: "",
+};
+
+const _createFormState = (isDisabled = false, message = "") => ({
+  isDisabled,
+  message,
+});
+
+const createFormState = (
+  { price, email, confirmationEmail },
+  hasAgrredTOS?: boolean
+) => {
+  if (!price || Number(price) <= 0) {
+    return _createFormState(true, "Price is not valid.");
+  } else if (confirmationEmail?.length === 0 || email?.length === 0) {
+    return _createFormState(true);
+  } else if (email !== confirmationEmail) {
+    return _createFormState(true, "Email are not matching");
+  } else if (!hasAgrredTOS) {
+    return _createFormState(
+      true,
+      "You need to accept with terms of service in order to submit the form"
+    );
+  }
+
+  return _createFormState();
+};
 
 const OrderModal = (props: any) => {
-  const { course, onClose } = props;
+  const { course, onClose, onSubmit } = props;
   const [isOpen, setIsOpen] = useState(false);
+  const [order, setOrder] = useState(defaultOrder);
+  const [enablePrice, setEnablePrice] = useState(false);
+  const [hasAgrredTOS, setHasAggredTOS] = useState(false);
+  const { eth, perItem } = useEthPrice();
 
   useEffect(() => {
-    setIsOpen(!!course);
+    if (Boolean(course)) {
+      setIsOpen(course);
+      setOrder({ ...defaultOrder, price: eth?.data });
+    }
   }, [course]);
 
   const onCloseModal = () => {
     setIsOpen(false);
     onClose();
+    setOrder(defaultOrder);
+    setEnablePrice(false);
+    setHasAggredTOS(false);
   };
+
+  const formState = createFormState(order, hasAgrredTOS);
 
   return (
     <Modal isOpen={isOpen}>
       <div className="inline-block align-bottom bg-white rounded-lg text-left overflow-hidden shadow-xl transform transition-all sm:my-8 sm:align-middle sm:max-w-lg sm:w-full">
         <div className="bg-white px-4 pt-5 pb-4 sm:p-6 sm:pb-4">
           <div className="sm:flex sm:items-start">
-            <div className="mt-3 text-center sm:mt-0 sm:ml-4 sm:text-left">
+            <div className="mt-3 sm:mt-0 sm:ml-4 sm:text-left">
               <h3
                 className="mb-7 text-lg font-bold leading-6 text-gray-900"
                 id="modal-title"
@@ -31,14 +75,42 @@ const OrderModal = (props: any) => {
                   <label className="mb-2 font-bold">Price(eth)</label>
                   <div className="text-xs text-gray-700 flex">
                     <label className="flex items-center mr-2">
-                      <input type="checkbox" className="form-checkbox" />
+                      <input
+                        type="checkbox"
+                        className="form-checkbox"
+                        checked={enablePrice}
+                        onChange={(event: any) => {
+                          const { checked } = event?.target;
+
+                          setOrder({
+                            ...order,
+                            price: checked ? order?.price : perItem,
+                          });
+                          setEnablePrice(checked);
+                        }}
+                      />
                     </label>
                     <span>
                       Adjust Price - only when the price is not correct
                     </span>
                   </div>
                 </div>
+
                 <input
+                  disabled={!enablePrice}
+                  value={order?.price}
+                  onChange={(event: any) => {
+                    const { value } = event?.target;
+
+                    if (isNaN(value)) {
+                      return;
+                    } else {
+                      setOrder({
+                        ...order,
+                        price: value,
+                      });
+                    }
+                  }}
                   type="text"
                   name="price"
                   id="price"
@@ -50,11 +122,20 @@ const OrderModal = (props: any) => {
                   allowed)
                 </p>
               </div>
+
               <div className="mt-2 relative rounded-md">
                 <div className="mb-1">
                   <label className="mb-2 font-bold">Email</label>
                 </div>
                 <input
+                  onChange={(event: any) => {
+                    const { value } = event?.target;
+
+                    setOrder({
+                      ...order,
+                      email: value?.trim(),
+                    });
+                  }}
                   type="email"
                   name="email"
                   id="email"
@@ -67,11 +148,20 @@ const OrderModal = (props: any) => {
                   anywhere
                 </p>
               </div>
+
               <div className="my-2 relative rounded-md">
                 <div className="mb-1">
                   <label className="mb-2 font-bold">Repeat Email</label>
                 </div>
                 <input
+                  onChange={(event: any) => {
+                    const { value } = event?.target;
+
+                    setOrder({
+                      ...order,
+                      confirmationEmail: value?.trim(),
+                    });
+                  }}
                   type="email"
                   name="confirmationEmail"
                   id="confirmationEmail"
@@ -81,7 +171,15 @@ const OrderModal = (props: any) => {
               </div>
               <div className="text-xs text-gray-700 flex">
                 <label className="flex items-center mr-2">
-                  <input type="checkbox" className="form-checkbox" />
+                  <input
+                    checked={hasAgrredTOS}
+                    type="checkbox"
+                    className="form-checkbox"
+                    onChange={(event: any) => {
+                      const { checked } = event?.target;
+                      setHasAggredTOS(checked);
+                    }}
+                  />
                 </label>
                 <span>
                   I accept Eincode &apos;terms of service&apos; and I agree that
@@ -89,11 +187,22 @@ const OrderModal = (props: any) => {
                   not correct
                 </span>
               </div>
+
+              {formState?.message && (
+                <div className="p-4 my-3 text-yellow-700 bg-red-200 rounded-lg text-sm">
+                  {formState?.message}
+                </div>
+              )}
             </div>
           </div>
         </div>
         <div className="bg-gray-50 px-4 py-3 sm:px-6 sm:flex">
-          <Button>Submit</Button>
+          <Button
+            disabled={formState?.isDisabled}
+            onClick={() => onSubmit(order)}
+          >
+            Submit
+          </Button>
 
           <Button variant="red" onClick={onCloseModal}>
             Cancel

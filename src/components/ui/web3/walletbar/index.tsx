@@ -1,13 +1,14 @@
 import { useWeb3 } from "@/components/providers";
+import { useWalletInfo } from "@/components/hooks/web3";
 
 const WalletBar = (props: any) => {
-  const { address, network } = props;
+  const { account, network } = useWalletInfo();
   const { requireInstall } = useWeb3();
 
   return (
     <section className="text-white bg-indigo-600 rounded-lg">
       <div className="p-8">
-        <h1 className="text-2xl">Hello, {address}</h1>
+        <h1 className="text-2xl">Hello, {account?.data}</h1>
 
         <h2 className="subtitle mb-5 text-xl">
           I hope you are having a great day!

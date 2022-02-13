@@ -3,6 +3,8 @@ import CourseCard from "./card";
 import CourseHero from "./hero";
 import CourseCurriculum from "./curriculum";
 import CourseKeypoints from "./keypoints";
+import OwnedCourseCard from "./card/OwnedCourseCard";
+import CourseFilter from "./filter";
 
 export {
   CourseList,
@@ -10,4 +12,6 @@ export {
   CourseCurriculum,
   CourseKeypoints,
   CourseCard,
+  OwnedCourseCard,
+  CourseFilter,
 };

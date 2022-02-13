@@ -1,5 +1,5 @@
-import Link from "next/link";
 import { useRouter } from "next/router";
+import { ActiveLink } from "@/components/ui";
 import { useWeb3 } from "@/components/providers";
 import { Button } from "@/components/ui";
 import { useAccount } from "@/components/hooks/web3";
@@ -16,31 +16,25 @@ const Navbar = () => {
         <nav className="relative" aria-label="Global">
           <div className="flex justify-between items-center">
             <div>
-              <Link href="/">
-                <a className="font-medium mr-8 text-gray-500 hover:text-gray-900">
-                  Home
-                </a>
-              </Link>
+              <ActiveLink href="/">
+                <a className="font-medium mr-8 hover:text-gray-900">Home</a>
+              </ActiveLink>
 
-              <Link href="/marketplace">
-                <a className="font-medium mr-8 text-gray-500 hover:text-gray-900">
+              <ActiveLink href="/marketplace">
+                <a className="font-medium mr-8 hover:text-gray-900">
                   Marketplace
                 </a>
-              </Link>
+              </ActiveLink>
 
-              <Link href="/">
-                <a className="font-medium mr-8 text-gray-500 hover:text-gray-900">
-                  Blogs
-                </a>
-              </Link>
+              <ActiveLink href="/blogs">
+                <a className="font-medium mr-8 hover:text-gray-900">Blogs</a>
+              </ActiveLink>
             </div>
 
             <div className="flex justify-between items-center">
-              <Link href="/">
-                <a className="font-medium mr-8 text-gray-500 hover:text-gray-900">
-                  Wishlist
-                </a>
-              </Link>
+              <ActiveLink href="/wishlist">
+                <a className="font-medium mr-8 hover:text-gray-900">Wishlist</a>
+              </ActiveLink>
 
               {isLoading ? (
                 <Button disabled={true}>Loading...</Button>
