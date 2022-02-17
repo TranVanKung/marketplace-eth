@@ -2,6 +2,7 @@ import { createContext, useContext, useEffect, useMemo, useState } from "react";
 import detectEthereumProvider from "@metamask/detect-provider";
 import Web3 from "web3";
 import { setupHooks } from "./hooks/setupHooks";
+import { loadContract } from "@/utils/loadContract";
 
 const Web3Context = createContext(null);
 
@@ -13,7 +14,11 @@ export const Web3Provider = (props: any) => {
     web3: null,
     contract: null,
     isLoading: true,
-    hooks: setupHooks(),
+    hooks: setupHooks({
+      provider: null,
+      contract: null,
+      web3: null,
+    }),
   });
 
   useEffect(() => {
@@ -22,13 +27,14 @@ export const Web3Provider = (props: any) => {
 
       if (provider) {
         const web3: any = new Web3(provider);
+        const contract = await loadContract("CourseMarketplace", web3);
 
         setWeb3Api({
           provider,
           web3,
-          contract: null,
+          contract,
           isLoading: false,
-          hooks: setupHooks(web3, provider),
+          hooks: setupHooks({ web3, provider, contract }),
         });
       } else {
         setWeb3Api((api: any) => ({ ...api, isLoading: false }));

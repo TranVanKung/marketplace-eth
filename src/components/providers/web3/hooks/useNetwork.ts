@@ -16,7 +16,7 @@ const NEXT_PUBLIC_TARGET_CHAIN_ID: any =
 
 const targetNetwork = NETWORKS[NEXT_PUBLIC_TARGET_CHAIN_ID];
 
-export const handler = (web3: any, provider: any) => () => {
+export const handler = (web3?: any, provider?: any) => () => {
   const { data, mutate, ...rest } = useSwR(
     () => (web3 ? "web3/network" : null),
     async () => {
