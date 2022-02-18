@@ -1,9 +1,12 @@
+import { nomalizeOwnedCourse } from "@/utils/nomalize";
 import useSWR from "swr";
+import { createCourseHash } from "@/utils/hash";
 
 export const handler =
   (web3?: any, contract?: any) => (courses: any, account: any) => {
     const swrRes = useSWR(
-      () => (web3 && contract && account ? "web3/ownedCourses" : null),
+      () =>
+        web3 && contract && account ? `web3/ownedCourses/${account}` : null,
       async () => {
         const ownedCourses = [];
 
@@ -14,17 +17,7 @@ export const handler =
             continue;
           }
 
-          const hexCourseId = web3?.utils?.utf8ToHex(course?.id);
-          const courseHash = web3?.utils?.soliditySha3(
-            {
-              type: "bytes16",
-              value: hexCourseId,
-            },
-            {
-              type: "address",
-              value: account,
-            }
-          );
+          const courseHash = createCourseHash(web3)(course.id, account);
 
           const ownedCourse = await contract?.methods
             ?.getCourseByHash(courseHash)
@@ -33,7 +26,8 @@ export const handler =
           if (
             ownedCourse?.owner !== "0x0000000000000000000000000000000000000000"
           ) {
-            ownedCourses.push(ownedCourse);
+            const nomalized = nomalizeOwnedCourse(web3)(course, ownedCourse);
+            ownedCourses.push(nomalized);
           }
         }
 

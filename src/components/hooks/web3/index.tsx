@@ -1,9 +1,44 @@
 import { useHooks } from "@/components/providers/web3";
+import { useEffect } from "react";
+import { useWeb3 } from "@/components/providers";
+import { useRouter } from "next/router";
+
+const _isEmpty = (data: any) => {
+  return (
+    data == null ||
+    data === "" ||
+    (Array.isArray(data) && data.length === 0) ||
+    (data.constructor === Object && Object.keys(data).length === 0)
+  );
+};
+
+export const useAdmin = ({ redirectTo }: any) => {
+  const { account } = useAccount();
+  const { requireInstall } = useWeb3();
+  const router = useRouter();
+
+  useEffect(() => {
+    if (
+      requireInstall ||
+      (account.hasInitialResponse && !account.isAdmin) ||
+      account.isEmpty
+    ) {
+      router.push(redirectTo);
+    }
+  }, [account]);
+
+  return { account };
+};
 
 const enhanceHook = (swrRes: any) => {
+  const { data, error } = swrRes;
+  const hasInitialResponse = !!(data || error);
+  const isEmpty = hasInitialResponse && _isEmpty(data);
+
   return {
     ...swrRes,
-    hasInitialResponse: swrRes?.data || swrRes?.error,
+    isEmpty,
+    hasInitialResponse,
   };
 };
 
@@ -30,6 +65,26 @@ export const useOwnedCourses = (...args: any) => {
 
   return {
     ownedCourses: swrRes,
+  };
+};
+
+export const useOwnedCourse = (...args: any) => {
+  const swrRes = enhanceHook(
+    useHooks((hooks: any) => hooks?.useOwnedCourse)(...args)
+  );
+
+  return {
+    ownedCourse: swrRes,
+  };
+};
+
+export const useManagedCourses = (...args: any) => {
+  const swrRes = enhanceHook(
+    useHooks((hooks: any) => hooks.useManagedCourses)(...args)
+  );
+
+  return {
+    managedCourses: swrRes,
   };
 };
 

@@ -21,14 +21,22 @@ export const handler = (web3?: any, provider?: any) => () => {
     () => (web3 ? "web3/network" : null),
     async () => {
       const chainId = await web3?.eth?.getChainId();
+
+      if (!chainId) {
+        throw new Error("Cannot retreive network. Please refresh the browser.");
+      }
+
       return NETWORKS[chainId];
     }
   );
 
   useEffect(() => {
-    provider?.on("chainChanged", (chainId: any) =>
-      mutate(NETWORKS[parseInt(chainId, 16)])
-    );
+    const mutator = (chainId: any) => mutate(NETWORKS[parseInt(chainId, 16)]);
+    provider?.on("chainChanged", mutator);
+
+    return () => {
+      provider?.removeListener("chainChanged", mutator);
+    };
   }, [provider]);
 
   return {

@@ -51,9 +51,7 @@ const Marketplace = (props: any) => {
 
   return (
     <Fragment>
-      <div className="py-4">
-        <MarketHeader />
-      </div>
+      <MarketHeader />
 
       <CourseList courses={courses || []}>
         {(course: any) => (

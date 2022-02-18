@@ -16,30 +16,26 @@ const Card = (props: CardProps) => {
         <div className="flex-1 h-full next-image-wrapper">
           <Image
             className={`object-cover ${disabled && "filter grayscale"}`}
-            src={course?.coverImage}
-            alt={course?.title}
+            src={course.coverImage}
             layout="responsive"
             width="200"
-            height="290"
+            height="230"
+            alt={course.title}
           />
         </div>
-
-        <div className="p-8 pb-1 flex-2">
+        <div className="p-8 pb-4 flex-2">
           <div className="uppercase tracking-wide text-sm text-indigo-500 font-semibold">
-            {course?.type}
+            {course.type}
           </div>
-
-          <Link href={`/courses/${course.slug}/`}>
-            <a className="h-12 block mt-1 text-lg leading-tight font-medium text-black hover:underline">
-              {course?.title}
+          <Link href={`/courses/${course.slug}`}>
+            <a className="h-12 block mt-1 text-sm sm:text-lg leading-tight font-medium text-black hover:underline">
+              {course.title}
             </a>
           </Link>
-
-          <p className="mt-2 text-gray-500">
-            {course?.description?.substring(0, 70)}...
+          <p className="mt-2 text-sm sm:text-base text-gray-500">
+            {course.description.substring(0, 70)}...
           </p>
-
-          {Footer ? <Footer /> : null}
+          {Footer && <Footer />}
         </div>
       </div>
     </div>
