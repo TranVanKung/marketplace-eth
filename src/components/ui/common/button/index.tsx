@@ -11,6 +11,7 @@ const Button = (props: any) => {
 
   const variants: any = {
     white: `text-black bg-white`,
+    green: `text-white bg-green-600 ${hoverable && "hover:bg-green-700"}`,
     purple: `text-white bg-indigo-600 ${
       hoverable ? "hover:bg-indigo-700" : ""
     }`,
