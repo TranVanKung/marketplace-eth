@@ -4,7 +4,7 @@ export const COURSE_STATES: any = {
   2: "deactivated",
 };
 
-export const nomalizeOwnedCourse =
+export const normalizeOwnedCourse =
   (web3: any) => (course: any, ownedCourse: any) => {
     return {
       ...course,

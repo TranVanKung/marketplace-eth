@@ -6,8 +6,14 @@ const TYPES: any = {
   danger: "red",
 };
 
+const SIZES: any = {
+  sm: "text-sm",
+  md: "text-base",
+  lg: "text-lg",
+};
+
 const Message = (props: any) => {
-  const { children, type = "success" } = props;
+  const { children, type = "success", size = "md" } = props;
   const [isDisplayed, setIsDisplayed] = useState(true);
 
   if (!isDisplayed) {
@@ -15,15 +21,18 @@ const Message = (props: any) => {
   }
 
   const messageType = TYPES[type];
+  const messageSizeClass = SIZES[size];
 
   return (
     <div className={`bg-${messageType}-100 rounded-xl mb-3`}>
-      <div className="max-w-7xl mx-auto py-3 px-3 sm:px-3 lg:px-3">
+      <div className="max-w-7xl mx-auto py-2 px-1">
         <div className="flex items-center justify-between flex-wrap">
           <div className="w-0 flex-1 flex items-center">
-            <p className={`ml-3 font-medium text-${messageType}-900 truncate`}>
+            <div
+              className={`ml-3 ${messageSizeClass} font-medium text-${messageType}-900`}
+            >
               <span className="hidden md:inline">{children}</span>
-            </p>
+            </div>
           </div>
           <div className="order-2 flex-shrink-0 sm:order-3 sm:ml-3">
             <button

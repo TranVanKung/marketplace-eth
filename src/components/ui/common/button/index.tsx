@@ -1,3 +1,9 @@
+const SIZE: any = {
+  sm: "p-2 text-base xs:px-4",
+  md: "p-3 text-base xs:px-8",
+  lg: "p-3 text-lg xs:px-8",
+};
+
 const Button = (props: any) => {
   const {
     onClick,
@@ -6,9 +12,11 @@ const Button = (props: any) => {
     className = "text-white bg-indigo-600 hover:bg-indigo-700",
     variant = "purple",
     hoverable = true,
+    size = "md",
     ...rest
   } = props;
 
+  const sizeClass = SIZE[size];
   const variants: any = {
     white: `text-black bg-white`,
     green: `text-white bg-green-600 ${hoverable && "hover:bg-green-700"}`,
@@ -26,7 +34,7 @@ const Button = (props: any) => {
       onClick={onClick}
       disabled={disabled}
       {...rest}
-      className={`disabled:opacity-50 disabled:cursor-not-allowed px-8 p-2 py-3 border rounded-md text-base font-medium mr-8 ${className} ${variants[variant]}`}
+      className={`${sizeClass} disabled:opacity-50 disabled:cursor-not-allowed border rounded-md font-medium ${className} ${variants[variant]}`}
     >
       {children}
     </button>

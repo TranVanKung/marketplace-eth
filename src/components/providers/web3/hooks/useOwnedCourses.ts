@@ -1,33 +1,32 @@
-import { nomalizeOwnedCourse } from "@/utils/nomalize";
-import useSWR from "swr";
 import { createCourseHash } from "@/utils/hash";
+import { normalizeOwnedCourse } from "@/utils/nomalize";
+import useSWR from "swr";
 
 export const handler =
-  (web3?: any, contract?: any) => (courses: any, account: any) => {
+  (web3: any, contract: any) => (courses: any, account: any) => {
     const swrRes = useSWR(
       () =>
         web3 && contract && account ? `web3/ownedCourses/${account}` : null,
       async () => {
         const ownedCourses = [];
 
-        for (let i = 0; i < courses?.length; i++) {
+        for (let i = 0; i < courses.length; i++) {
           const course = courses[i];
 
-          if (!course?.id) {
+          if (!course.id) {
             continue;
           }
 
           const courseHash = createCourseHash(web3)(course.id, account);
-
-          const ownedCourse = await contract?.methods
-            ?.getCourseByHash(courseHash)
-            ?.call();
+          const ownedCourse = await contract.methods
+            .getCourseByHash(courseHash)
+            .call();
 
           if (
-            ownedCourse?.owner !== "0x0000000000000000000000000000000000000000"
+            ownedCourse.owner !== "0x0000000000000000000000000000000000000000"
           ) {
-            const nomalized = nomalizeOwnedCourse(web3)(course, ownedCourse);
-            ownedCourses.push(nomalized);
+            const normalized = normalizeOwnedCourse(web3)(course, ownedCourse);
+            ownedCourses.push(normalized);
           }
         }
 
@@ -35,5 +34,12 @@ export const handler =
       }
     );
 
-    return swrRes;
+    return {
+      ...swrRes,
+      lookup:
+        swrRes.data?.reduce((a, c) => {
+          a[c.id] = c;
+          return a;
+        }, {}) ?? {},
+    };
   };

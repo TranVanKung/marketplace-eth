@@ -14,19 +14,26 @@ const _createFormState = (isDisabled = false, message = "") => ({
 });
 
 const createFormState = (
-  { price, email, confirmationEmail },
-  hasAgrredTOS?: boolean
+  { price, email, confirmationEmail }: any,
+  hasAgreedTOS: any,
+  isNewPurchase: any
 ) => {
   if (!price || Number(price) <= 0) {
     return _createFormState(true, "Price is not valid.");
-  } else if (confirmationEmail?.length === 0 || email?.length === 0) {
-    return _createFormState(true);
-  } else if (email !== confirmationEmail) {
-    return _createFormState(true, "Email are not matching");
-  } else if (!hasAgrredTOS) {
+  }
+
+  if (isNewPurchase) {
+    if (confirmationEmail.length === 0 || email.length === 0) {
+      return _createFormState(true);
+    } else if (email !== confirmationEmail) {
+      return _createFormState(true, "Email are not matching.");
+    }
+  }
+
+  if (!hasAgreedTOS) {
     return _createFormState(
       true,
-      "You need to accept with terms of service in order to submit the form"
+      "You need to agree with terms of service in order to submit the form"
     );
   }
 
@@ -34,29 +41,32 @@ const createFormState = (
 };
 
 const OrderModal = (props: any) => {
-  const { course, onClose, onSubmit } = props;
+  const { course, onClose, onSubmit, isNewPurchase } = props;
   const [isOpen, setIsOpen] = useState(false);
   const [order, setOrder] = useState(defaultOrder);
   const [enablePrice, setEnablePrice] = useState(false);
-  const [hasAgrredTOS, setHasAggredTOS] = useState(false);
+  const [hasAgreedTOS, setHasAgreedTOS] = useState(false);
   const { eth, perItem } = useEthPrice();
 
   useEffect(() => {
-    if (Boolean(course)) {
-      setIsOpen(course);
-      setOrder({ ...defaultOrder, price: eth?.data });
+    if (!!course) {
+      setIsOpen(true);
+      setOrder({
+        ...defaultOrder,
+        price: perItem,
+      });
     }
   }, [course]);
 
-  const onCloseModal = () => {
+  const closeModal = () => {
     setIsOpen(false);
-    onClose();
     setOrder(defaultOrder);
     setEnablePrice(false);
-    setHasAggredTOS(false);
+    setHasAgreedTOS(false);
+    onClose();
   };
 
-  const formState = createFormState(order, hasAgrredTOS);
+  const formState = createFormState(order, hasAgreedTOS, isNewPurchase);
 
   return (
     <Modal isOpen={isOpen}>
@@ -68,7 +78,7 @@ const OrderModal = (props: any) => {
                 className="mb-7 text-lg font-bold leading-6 text-gray-900"
                 id="modal-title"
               >
-                {course?.title}
+                {course.title}
               </h3>
               <div className="mt-1 relative rounded-md">
                 <div className="mb-1">
@@ -76,18 +86,16 @@ const OrderModal = (props: any) => {
                   <div className="text-xs text-gray-700 flex">
                     <label className="flex items-center mr-2">
                       <input
-                        type="checkbox"
-                        className="form-checkbox"
                         checked={enablePrice}
-                        onChange={(event: any) => {
-                          const { checked } = event?.target;
-
+                        onChange={({ target: { checked } }) => {
                           setOrder({
                             ...order,
-                            price: checked ? order?.price : perItem,
+                            price: checked ? order.price : perItem,
                           });
                           setEnablePrice(checked);
                         }}
+                        type="checkbox"
+                        className="form-checkbox"
                       />
                     </label>
                     <span>
@@ -95,21 +103,17 @@ const OrderModal = (props: any) => {
                     </span>
                   </div>
                 </div>
-
                 <input
                   disabled={!enablePrice}
-                  value={order?.price}
-                  onChange={(event: any) => {
-                    const { value } = event?.target;
-
-                    if (isNaN(value)) {
+                  value={order.price}
+                  onChange={({ target: { value } }) => {
+                    if (isNaN(Number(value))) {
                       return;
-                    } else {
-                      setOrder({
-                        ...order,
-                        price: value,
-                      });
                     }
+                    setOrder({
+                      ...order,
+                      price: value,
+                    });
                   }}
                   type="text"
                   name="price"
@@ -122,63 +126,60 @@ const OrderModal = (props: any) => {
                   allowed)
                 </p>
               </div>
-
-              <div className="mt-2 relative rounded-md">
-                <div className="mb-1">
-                  <label className="mb-2 font-bold">Email</label>
-                </div>
-                <input
-                  onChange={(event: any) => {
-                    const { value } = event?.target;
-
-                    setOrder({
-                      ...order,
-                      email: value?.trim(),
-                    });
-                  }}
-                  type="email"
-                  name="email"
-                  id="email"
-                  className="w-80 focus:ring-indigo-500 shadow-md focus:border-indigo-500 block pl-7 p-4 sm:text-sm border-gray-300 rounded-md"
-                  placeholder="x@y.com"
-                />
-                <p className="text-xs text-gray-700 mt-1">
-                  It&apos;s important to fill a correct email, otherwise the
-                  order cannot be verified. We are not storing your email
-                  anywhere
-                </p>
-              </div>
-
-              <div className="my-2 relative rounded-md">
-                <div className="mb-1">
-                  <label className="mb-2 font-bold">Repeat Email</label>
-                </div>
-                <input
-                  onChange={(event: any) => {
-                    const { value } = event?.target;
-
-                    setOrder({
-                      ...order,
-                      confirmationEmail: value?.trim(),
-                    });
-                  }}
-                  type="email"
-                  name="confirmationEmail"
-                  id="confirmationEmail"
-                  className="w-80 focus:ring-indigo-500 shadow-md focus:border-indigo-500 block pl-7 p-4 sm:text-sm border-gray-300 rounded-md"
-                  placeholder="x@y.com"
-                />
-              </div>
-              <div className="text-xs text-gray-700 flex">
+              {isNewPurchase && (
+                <>
+                  <div className="mt-2 relative rounded-md">
+                    <div className="mb-1">
+                      <label className="mb-2 font-bold">Email</label>
+                    </div>
+                    <input
+                      onChange={({ target: { value } }) => {
+                        setOrder({
+                          ...order,
+                          email: value.trim(),
+                        });
+                      }}
+                      type="email"
+                      name="email"
+                      id="email"
+                      className="w-80 focus:ring-indigo-500 shadow-md focus:border-indigo-500 block pl-7 p-4 sm:text-sm border-gray-300 rounded-md"
+                      placeholder="x@y.com"
+                    />
+                    <p className="text-xs text-gray-700 mt-1">
+                      It&apos;s important to fill a correct email, otherwise the
+                      order cannot be verified. We are not storing your email
+                      anywhere
+                    </p>
+                  </div>
+                  <div className="my-2 relative rounded-md">
+                    <div className="mb-1">
+                      <label className="mb-2 font-bold">Repeat Email</label>
+                    </div>
+                    <input
+                      onChange={({ target: { value } }) => {
+                        setOrder({
+                          ...order,
+                          confirmationEmail: value.trim(),
+                        });
+                      }}
+                      type="email"
+                      name="confirmationEmail"
+                      id="confirmationEmail"
+                      className="w-80 focus:ring-indigo-500 shadow-md focus:border-indigo-500 block pl-7 p-4 sm:text-sm border-gray-300 rounded-md"
+                      placeholder="x@y.com"
+                    />
+                  </div>
+                </>
+              )}
+              <div className="text-xs text-gray-700 flex mt-5">
                 <label className="flex items-center mr-2">
                   <input
-                    checked={hasAgrredTOS}
+                    checked={hasAgreedTOS}
+                    onChange={({ target: { checked } }) => {
+                      setHasAgreedTOS(checked);
+                    }}
                     type="checkbox"
                     className="form-checkbox"
-                    onChange={(event: any) => {
-                      const { checked } = event?.target;
-                      setHasAggredTOS(checked);
-                    }}
                   />
                 </label>
                 <span>
@@ -187,10 +188,9 @@ const OrderModal = (props: any) => {
                   not correct
                 </span>
               </div>
-
-              {formState?.message && (
-                <div className="p-4 my-3 text-yellow-700 bg-red-200 rounded-lg text-sm">
-                  {formState?.message}
+              {formState.message && (
+                <div className="p-4 my-3 text-yellow-700 bg-yellow-200 rounded-lg text-sm">
+                  {formState.message}
                 </div>
               )}
             </div>
@@ -198,13 +198,14 @@ const OrderModal = (props: any) => {
         </div>
         <div className="bg-gray-50 px-4 py-3 sm:px-6 sm:flex">
           <Button
-            disabled={formState?.isDisabled}
-            onClick={() => onSubmit(order)}
+            disabled={formState.isDisabled}
+            onClick={() => {
+              onSubmit(order);
+            }}
           >
             Submit
           </Button>
-
-          <Button variant="red" onClick={onCloseModal}>
+          <Button onClick={closeModal} variant="red">
             Cancel
           </Button>
         </div>

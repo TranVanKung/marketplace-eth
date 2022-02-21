@@ -1,4 +1,4 @@
-import { nomalizeOwnedCourse } from "@/utils/nomalize";
+import { normalizeOwnedCourse } from "@/utils/nomalize";
 import useSWR from "swr";
 
 export const handler = (web3: any, contract: any) => (account: any) => {
@@ -20,7 +20,7 @@ export const handler = (web3: any, contract: any) => (account: any) => {
           .call();
 
         if (course) {
-          const normalized = nomalizeOwnedCourse(web3)(
+          const normalized = normalizeOwnedCourse(web3)(
             { hash: courseHash },
             course
           );

@@ -1,4 +1,4 @@
-import { nomalizeOwnedCourse } from "@/utils/nomalize";
+import { normalizeOwnedCourse } from "@/utils/nomalize";
 import { createCourseHash } from "@/utils/hash";
 import useSWR from "swr";
 
@@ -20,7 +20,7 @@ export const handler =
           return null;
         }
 
-        return nomalizeOwnedCourse(web3)(course, ownedCourse);
+        return normalizeOwnedCourse(web3)(course, ownedCourse);
       }
     );
 

@@ -16,8 +16,8 @@ const NEXT_PUBLIC_TARGET_CHAIN_ID: any =
 
 const targetNetwork = NETWORKS[NEXT_PUBLIC_TARGET_CHAIN_ID];
 
-export const handler = (web3?: any, provider?: any) => () => {
-  const { data, mutate, ...rest } = useSwR(
+export const handler = (web3?: any) => () => {
+  const { data, ...rest } = useSwR(
     () => (web3 ? "web3/network" : null),
     async () => {
       const chainId = await web3?.eth?.getChainId();
@@ -30,18 +30,8 @@ export const handler = (web3?: any, provider?: any) => () => {
     }
   );
 
-  useEffect(() => {
-    const mutator = (chainId: any) => mutate(NETWORKS[parseInt(chainId, 16)]);
-    provider?.on("chainChanged", mutator);
-
-    return () => {
-      provider?.removeListener("chainChanged", mutator);
-    };
-  }, [provider]);
-
   return {
     data,
-    mutate,
     targetNetwork,
     isSupported: data === targetNetwork,
     ...rest,
