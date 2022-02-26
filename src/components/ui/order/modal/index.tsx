@@ -200,7 +200,7 @@ const OrderModal = (props: any) => {
           <Button
             disabled={formState.isDisabled}
             onClick={() => {
-              onSubmit(order);
+              onSubmit(order, course);
             }}
           >
             Submit

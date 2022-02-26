@@ -3,10 +3,11 @@ import { BaseLayout } from "@/components/ui/layout";
 import { MarketHeader } from "@/components/ui/marketplace";
 import { ManagedCourseCard, CourseFilter } from "@/components/ui/course";
 import { useManagedCourses, useAdmin } from "@/components/hooks/web3";
-import { useState, useEffect } from "react";
+import { useState } from "react";
 import { useWeb3 } from "@/components/providers";
 import { Button, Message } from "@/components/ui";
 import { normalizeOwnedCourse } from "@/utils/nomalize";
+import { withToast } from "@/utils/toast";
 
 const VerificationInput = ({ onVerify }: any) => {
   const [email, setEmail] = useState("");
@@ -65,20 +66,22 @@ const ManageCourse = () => {
 
   const changeCourseState = async (courseHash: string, method: string) => {
     try {
-      await contract.methods[method](courseHash).send({
+      const result = await contract.methods[method](courseHash).send({
         from: account.data,
       });
+
+      return result;
     } catch (e: any) {
-      console.error(e.message);
+      throw new Error(e.message);
     }
   };
 
   const activateCourse = async (courseHash: string) => {
-    changeCourseState(courseHash, "activateCourse");
+    withToast(changeCourseState(courseHash, "activateCourse"));
   };
 
   const deactivateCourse = async (courseHash: string) => {
-    changeCourseState(courseHash, "deactivateCourse");
+    withToast(changeCourseState(courseHash, "deactivateCourse"));
   };
 
   const searchCourse = async (hash: any) => {

@@ -23,7 +23,7 @@ const OwnedCourse = (props: any) => {
         {ownedCourses.isEmpty && (
           <div className="w-1/2">
             <Message>
-              <div>You do not own any courses</div>
+              <div>You don&apos;t own any courses</div>
               <Link href="/marketplace">
                 <a className="font-normal hover:underline">
                   <i>Purchase Course</i>
